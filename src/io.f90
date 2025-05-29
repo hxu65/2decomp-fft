@@ -1397,7 +1397,10 @@ contains
       logical, parameter :: adios2_constant_dims = .true.
       integer :: data_type
       integer :: ierror
-
+      type(adios2_derived_variable)                :: derived_variable
+      character(len=256)                           :: derived_name
+      character(len=256)                           :: derived_expression
+      integer                                      :: special_error
       if (iplane == 0) then
          if (present(opt_decomp)) then
             call coarse_extents(ipencil, icoarse, sizes, subsizes, starts, opt_decomp)
@@ -1442,6 +1445,10 @@ contains
             call adios2_define_variable(var_handle, io_handle, varname, data_type, &
                                         ndims, int(sizes, kind=8), int(starts, kind=8), int(subsizes, kind=8), &
                                         adios2_constant_dims, ierror)
+            derived_name = "hash_of_" // trim(varname)
+            derived_expression = "x=" // trim(varname) // " hash(x)"
+            call adios2_define_derived_variable(derived_variable, io_handle, derived_name, derived_expression, &
+                                          adios2_derived_var_type_store_data, special_error)
             if (ierror /= 0) then
                call decomp_2d_abort(__FILE__, __LINE__, ierror, &
                                     "adios2_define_variable, ERROR registering variable "//trim(varname))
