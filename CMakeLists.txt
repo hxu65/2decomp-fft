@@ -34,7 +34,7 @@ option(ENABLE_INPLACE "Enable in-place operation of FFT" OFF)
 option(HALO_DEBUG "Enable halo debugging options" OFF)
 option(EVEN "Padded alltoall transpose operations" OFF)
 option(BUILD_SHARED_LIBS "Set ON to build a shared library" OFF)
-set (IO_BACKEND "mpi" CACHE STRING "Default IO backend (mpi (default) or adios2)")
+set(IO_BACKEND "adios2" CACHE STRING "Default IO backend (mpi or adios2)" FORCE)
 set_property(CACHE IO_BACKEND PROPERTY STRINGS mpi adios2)
 
 set(AUTHOR "Stefano Rolfo;Charles Moulinec;Paul Bartholomew")
