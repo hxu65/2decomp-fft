@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.20)                        
 cmake_policy(SET CMP0074 NEW)
 
-project(decomp2d
-  LANGUAGES Fortran)
+project(decomp2d LANGUAGES C CXX Fortran)
 set(version 2.0.4)
 enable_testing()
 if (IO_BACKEND MATCHES "adios2")
