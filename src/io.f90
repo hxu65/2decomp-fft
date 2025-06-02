@@ -1397,7 +1397,7 @@ contains
       logical, parameter :: adios2_constant_dims = .true.
       integer :: data_type
       integer :: ierror
-      type(adios2_derived_variable)                :: derived_variable
+      !type(adios2_derived_variable)                :: derived_variable
       character(len=256)                           :: derived_name
       character(len=256)                           :: derived_expression
       integer                                      :: special_error
@@ -1447,8 +1447,8 @@ contains
                                         adios2_constant_dims, ierror)
             derived_name = "curl_of_" // trim(varname)
             derived_expression = "x=" // trim(varname) // " curl(10, x)"
-            call adios2_define_derived_variable(derived_variable, io_handle, derived_name, derived_expression, &
-                                          adios2_derived_var_type_store_data, special_error)
+            !call adios2_define_derived_variable(derived_variable, io_handle, derived_name, derived_expression, &
+            !                              adios2_derived_var_type_store_data, special_error)
             if (ierror /= 0) then
                call decomp_2d_abort(__FILE__, __LINE__, ierror, &
                                     "adios2_define_variable, ERROR registering variable "//trim(varname))
