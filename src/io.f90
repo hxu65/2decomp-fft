@@ -2039,11 +2039,6 @@ contains
          ext = ".hdf5"
       else if (io%engine_type == "SST") then
          ext = ""
-      else
-         print *, "ERROR: Unkown engine type! ", io%engine_type
-         print *, "-  IO: ", io_name
-         print *, "- DIR:", io_dir
-         stop
       end if
       write (gen_iodir_name, "(A,A)") io_dir, trim(ext)
 #endif
