@@ -1445,10 +1445,15 @@ contains
             call adios2_define_variable(var_handle, io_handle, varname, data_type, &
                                         ndims, int(sizes, kind=8), int(starts, kind=8), int(subsizes, kind=8), &
                                         adios2_constant_dims, ierror)
-            derived_name = "add_of_" // trim(varname)
-            derived_expression = "x=" // trim(varname) // " add(x)"
-            call adios2_define_derived_variable(derived_variable, io_handle, derived_name, derived_expression, &
+            derived_name = "qcrit" 
+            derived_expression =  "x =" // "ux" // achar(10) // &
+             "y =" // "uy" // achar(10) // &
+             "z =" // "uz" // achar(10) // &
+             "QCRIT(x,y,z)"
+            if (varname == "uz") then
+               call adios2_define_derived_variable(derived_variable, io_handle, derived_name, derived_expression, &
                                           adios2_derived_var_type_store_data, special_error)
+            end if
             if (ierror /= 0) then
                call decomp_2d_abort(__FILE__, __LINE__, ierror, &
                                     "adios2_define_variable, ERROR registering variable "//trim(varname))
