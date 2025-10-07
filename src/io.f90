@@ -1450,10 +1450,10 @@ contains
              "y =" // "uy" // achar(10) // &
              "z =" // "uz" // achar(10) // &
              "QCRIT(x,y,z)"
-            if (varname == "uz") then
-               call adios2_define_derived_variable(derived_variable, io_handle, derived_name, derived_expression, &
-                                          adios2_derived_var_type_store_data, special_error)
-            end if
+           ! if (varname == "uz") then
+           !    call adios2_define_derived_variable(derived_variable, io_handle, derived_name, derived_expression, &
+           !                               adios2_derived_var_type_store_data, special_error)
+           ! end if
             if (ierror /= 0) then
                call decomp_2d_abort(__FILE__, __LINE__, ierror, &
                                     "adios2_define_variable, ERROR registering variable "//trim(varname))
