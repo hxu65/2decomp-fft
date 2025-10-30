@@ -31,6 +31,14 @@ module decomp_2d_io
    character(len=1024), dimension(MAX_IOH), target, save :: engine_names
    logical, dimension(MAX_IOH), target, save :: engine_live
    type(adios2_engine), dimension(MAX_IOH), save :: engine_registry
+#ifdef ADIOS2
+   real(kind=8), save :: time_adios2_put = 0.0d0
+   real(kind=8), save :: time_adios2_begin = 0.0d0
+   real(kind=8), save :: time_adios2_end = 0.0d0
+   integer, save :: count_adios2_put = 0
+   integer, save :: count_adios2_begin = 0
+   integer, save :: count_adios2_end = 0
+#endif
 #endif
 
    private        ! Make everything private unless declared public
@@ -152,6 +160,11 @@ contains
 #ifdef PROFILER
       if (decomp_profiler_io) call decomp_profiler_start("io_fin")
 #endif
+      if (nrank == 0) then
+         print *, 'ADIOS2 begin_step total time (s): ', time_adios2_begin, ' calls: ', count_adios2_begin
+         print *, 'ADIOS2 end_step   total time (s): ', time_adios2_end,   ' calls: ', count_adios2_end
+         print *, 'ADIOS2 put        total time (s): ', time_adios2_put,   ' calls: ', count_adios2_put
+      end if
       call adios2_finalize(adios, ierror)
       if (ierror /= 0) then
          call decomp_2d_abort(__FILE__, __LINE__, ierror, "adios2_finalize")
@@ -1356,7 +1369,15 @@ contains
       end if
 
       if (engine_registry(idx)%valid) then
-         call adios2_put(engine_registry(idx), var_handle, var, write_mode, ierror)
+         ! time adios2_put
+         block
+            real(kind=8) :: t0, t1
+            t0 = MPI_WTIME()
+            call adios2_put(engine_registry(idx), var_handle, var, write_mode, ierror)
+            t1 = MPI_WTIME()
+            time_adios2_put = time_adios2_put + (t1 - t0)
+            count_adios2_put = count_adios2_put + 1
+         end block
          if (ierror /= 0) call decomp_2d_abort(__FILE__, __LINE__, ierror, "adios2_put")
       else
          call decomp_2d_abort(__FILE__, __LINE__, -1, &
@@ -1947,7 +1968,15 @@ contains
       idx = get_io_idx(io_name, io_dir)
       associate (engine => engine_registry(idx))
          if (engine%valid) then
-            call adios2_begin_step(engine, ierror)
+            ! time adios2_begin_step
+            block
+               real(kind=8) :: t0, t1
+               t0 = MPI_WTIME()
+               call adios2_begin_step(engine, ierror)
+               t1 = MPI_WTIME()
+               time_adios2_begin = time_adios2_begin + (t1 - t0)
+               count_adios2_begin = count_adios2_begin + 1
+            end block
             if (ierror /= 0) call decomp_2d_abort(__FILE__, __LINE__, ierror, "adios2_begin_step")
          else
             call decomp_2d_abort(__FILE__, __LINE__, -1, "trying to begin step with invalid engine")
@@ -1971,7 +2000,15 @@ contains
       idx = get_io_idx(io_name, io_dir)
       associate (engine => engine_registry(idx))
          if (engine%valid) then
-            call adios2_end_step(engine, ierror)
+            ! time adios2_end_step
+            block
+               real(kind=8) :: t0, t1
+               t0 = MPI_WTIME()
+               call adios2_end_step(engine, ierror)
+               t1 = MPI_WTIME()
+               time_adios2_end = time_adios2_end + (t1 - t0)
+               count_adios2_end = count_adios2_end + 1
+            end block
             if (ierror /= 0) call decomp_2d_abort(__FILE__, __LINE__, ierror, "adios2_end_step")
          else
             call decomp_2d_abort(__FILE__, __LINE__, -1, "trying to end step with invalid engine")
