@@ -2026,17 +2026,12 @@ contains
 #else
       call adios2_at_io(io, adios, io_name, ierror)
       if (ierror /= 0) call decomp_2d_abort(__FILE__, __LINE__, ierror, "adios2_at_io "//trim(io_name))
-      if (io%engine_type == "BP4") then
-         ext = ".bp4"
+      if (io%engine_type == "BP5") then
+         ext = ".bp5"
       else if (io%engine_type == "HDF5") then
          ext = ".hdf5"
       else if (io%engine_type == "SST") then
          ext = ""
-      else
-         print *, "ERROR: Unkown engine type! ", io%engine_type
-         print *, "-  IO: ", io_name
-         print *, "- DIR:", io_dir
-         stop
       end if
       write (gen_iodir_name, "(A,A)") io_dir, trim(ext)
 #endif
